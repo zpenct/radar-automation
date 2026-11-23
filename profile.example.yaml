@@ -1,0 +1,92 @@
+# Copy to profile.yaml and edit. profile.yaml is git-ignored.
+# Both the pre-filter and the model prompt read this file.
+
+summary: >
+  Software engineer with two years of experience in backend and web development.
+  Replace this with a short description of yourself; the scoring model reads it
+  to judge how well each job fits.
+
+skills:
+  languages: [Python, TypeScript]
+  backend: [FastAPI, Node.js, PostgreSQL]
+  frontend: [React]
+  infra: [Docker, CI/CD]
+
+target_roles:
+  - Backend Engineer
+  - Full Stack Engineer
+  - Frontend Engineer
+
+levels: [intern, entry level, junior, mid]
+
+preferences:
+  work_mode: remote
+  language: English          # language of the one-line reason in each digest entry
+  min_score: 60              # minimum score (0-100) for a job to appear in the digest
+
+filters:
+  # A job title must contain at least one of these terms (whole words, case-insensitive).
+  title_include:
+    - engineer
+    - developer
+    - software
+    - backend
+    - frontend
+    - full stack
+    - fullstack
+    - python
+    - react
+    - node
+    - typescript
+
+  # Titles containing any of these terms are dropped (seniority or unrelated domains).
+  title_exclude:
+    - senior
+    - sr
+    - staff
+    - principal
+    - lead
+    - head
+    - director
+    - manager
+    - architect
+    - sales
+    - account
+    - customer
+    - recruiter
+    - legal
+    - support engineer
+
+  # Location text that explicitly welcomes the candidate's region.
+  location_allow:
+    - worldwide
+    - anywhere
+    - global
+    - asia
+    - apac
+    - remote
+
+  # Location text that excludes the candidate's region. Ignored when an allow term is also present.
+  location_block:
+    - us only
+    - usa
+    - united states
+    - uk only
+    - united kingdom
+    - europe
+    - eu
+    - canada
+    - latam
+    - north america
+    - australia
+
+  # Phrases in the description that imply residency or work-authorization requirements.
+  description_exclude:
+    - security clearance
+    - must reside in
+    - must be located in
+    - must be based in
+    - authorized to work in the united states
+    - us work authorization
+    - us based
+    - us-based

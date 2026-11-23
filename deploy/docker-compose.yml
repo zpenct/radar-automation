@@ -1,0 +1,62 @@
+# Job Radar stack. Run from the deploy/ directory; configuration comes from deploy/.env.
+#
+#   docker compose up -d router                      # LLM gateway (always on)
+#   docker compose run --rm radar                    # one pipeline run (schedule this)
+#   docker compose --profile agent up -d hermes      # optional Telegram agent
+#
+# See docs/deployment-vps.md.
+
+services:
+  router:
+    image: decolua/9router:${ROUTER_IMAGE_TAG:-latest}
+    restart: unless-stopped
+    environment:
+      DATA_DIR: /app/data
+      PORT: "20128"
+      NODE_ENV: production
+      # Without INITIAL_PASSWORD the dashboard falls back to a well-known default.
+      INITIAL_PASSWORD: ${ROUTER_DASHBOARD_PASSWORD:?set ROUTER_DASHBOARD_PASSWORD in deploy/.env}
+      REQUIRE_API_KEY: "true"
+    volumes:
+      - router-data:/app/data
+    # Published on the host loopback only; open the dashboard through an SSH tunnel.
+    # Other containers reach the gateway as http://router:20128/v1 on the private network.
+    ports:
+      - "127.0.0.1:20128:20128"
+
+  radar:
+    build:
+      context: ..
+    profiles: ["jobs"]
+    restart: "no"
+    depends_on:
+      - router
+    environment:
+      ROUTER_BASE_URL: http://router:20128/v1
+      ROUTER_API_KEY: ${ROUTER_API_KEY:-}
+      SCORING_MODEL: ${SCORING_MODEL:-job-scorer}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+    volumes:
+      - radar-data:/data
+      # Defaults to the example profile; point RADAR_PROFILE_PATH at your own file.
+      - ${RADAR_PROFILE_PATH:-../profile.example.yaml}:/config/profile.yaml:ro
+
+  hermes:
+    image: nousresearch/hermes-agent:${HERMES_IMAGE_TAG:-latest}
+    profiles: ["agent"]
+    restart: unless-stopped
+    command: gateway run
+    depends_on:
+      - router
+    volumes:
+      - hermes-data:/opt/data
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+
+volumes:
+  router-data:
+  radar-data:
+  hermes-data:

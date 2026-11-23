@@ -1,0 +1,23 @@
+﻿# Secrets and personal configuration
+.env
+profile.yaml
+
+# Local state
+data/*.db
+data/*.db-*
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Tooling and OS
+.claude/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+deploy/.env
